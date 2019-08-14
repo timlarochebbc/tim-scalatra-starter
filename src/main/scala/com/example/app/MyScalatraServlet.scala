@@ -2,7 +2,7 @@ package com.example.app
 
 import java.util.Date
 
-import com.example.model.{Order, OrderDbStub, ProductDbStub}
+import com.example.model.{Cart, Order, OrderDbStub, ProductDbStub}
 import com.fasterxml.jackson.databind.ObjectMapper
 import org.scalatra._
 
@@ -15,6 +15,11 @@ class MyScalatraServlet extends ScalatraServlet {
   get("/order/:id"){
     println(OrderDbStub.db.get({params("id").toInt}).toString)
     views.html.order(OrderDbStub.db.get({params("id").toInt}).toString, {params(key = "id").toInt})
+  }
+
+  put("/addtocart/:id"){
+    Cart.items += ProductDbStub.db(params(key = "id").toInt)
+
   }
 
   post("/neworder"){
@@ -37,5 +42,8 @@ class MyScalatraServlet extends ScalatraServlet {
   post("/testpost"){
     OrderDbStub.db += 3 -> new Order(999, new Date(), "test999")
   }
-  //
+
+  get("/getcart"){
+    Cart.items
+  }
 }

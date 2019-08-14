@@ -1,5 +1,29 @@
 @import scala.collection.mutable
+@import com.example.model.Product
 @(products: mutable.HashMap[Int, Product])
-@layouts.html.default("Scalatra: a tiny, Sinatra-like web framework for Scala", "Welcome to Scalatra"){
-  <p>Hello, Jimmym!</p>
+@layouts.html.default("Orderoo", "Products"){
+
+    @for((key, value) <- products){
+      <button id="productButton" value="@key"> @value.name </button>
+    }
+
+  <h1> Current Cart </h1>
+
+  <script
+  src="https://code.jquery.com/jquery-3.4.1.slim.min.js"
+  integrity="sha256-pasqAKBDmFT4eHoN2ndd6lN370kFiGUFyTiUHWhU7k8="
+  crossorigin="anonymous"></script>
+
+  <script>
+    $("#productButton").click(function(e){
+      console.log("Button has been pressed");
+      var id = $(this).val()
+      console.log("Id: " + id)
+
+      //TODO: PUT INTO CART
+    });
+  </script>
+
+
+
 }

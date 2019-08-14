@@ -1,5 +1,4 @@
 package com.example.model
 
-class Product(name: String, cost: Int) {
-
+class Product(val name: String, val cost: Int) {
 }

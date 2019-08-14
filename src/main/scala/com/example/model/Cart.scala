@@ -1,0 +1,7 @@
+package com.example.model
+
+import scala.collection.mutable.ArrayBuffer
+
+object Cart {
+  var items = ArrayBuffer[Product]()
+}
