@@ -1,0 +1,7 @@
+@(x: String, y: Int)
+@testVariable = {DbStub.x}
+@layouts.html.timlayout("Delivery", "Order"){
+    <p> @x </p>
+
+    <p> @y </p>
+}
