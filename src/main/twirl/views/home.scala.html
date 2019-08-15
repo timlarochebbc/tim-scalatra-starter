@@ -4,24 +4,77 @@
 @layouts.html.default("Orderoo", "Products"){
 
     @for((key, value) <- products){
-      <button id="productButton" value="@key"> @value.name </button>
+      <button class="productButton" value="@key"> @value.name </button>
     }
 
   <h1> Current Cart </h1>
+  <table id="cart">
+    <tr>
+      <th>Item</th>
+      <th>Cost</th>
+    </tr>
+  </table>
+
+  <button id="checkout">checkout</button>
 
   <script
-  src="https://code.jquery.com/jquery-3.4.1.slim.min.js"
-  integrity="sha256-pasqAKBDmFT4eHoN2ndd6lN370kFiGUFyTiUHWhU7k8="
+  src="https://code.jquery.com/jquery-3.4.1.min.js"
+  integrity="sha256-CSXorXvZcTkaix6Yvo6HppcZGetbYMGWSFlBw8HfCJo="
   crossorigin="anonymous"></script>
 
   <script>
-    $("#productButton").click(function(e){
-      console.log("Button has been pressed");
+    var carts;
+    $(".productButton").click(function(e){
       var id = $(this).val()
-      console.log("Id: " + id)
 
       //TODO: PUT INTO CART
+      $.ajax({
+        url: "/addtocart/"+id,
+        method: 'PUT',
+        data: {},
+        success: function(){
+          refreshCart();
+        }
+      })
     });
+
+    $("#checkout").click(function(e){
+      console.log(JSON.stringify(carts).toString())
+      $.ajax({
+        url: "/neworder",
+        method: 'POST',
+        data: JSON.stringify(carts),
+        contentType: "application/json",
+        success: function(data){
+          console.log(data)
+          refreshCart()
+        }
+      })
+    });
+
+    function refreshCart(){
+      $.ajax({
+        url: "/getcart",
+        method: 'GET',
+        data: {},
+        success: function(data){
+          console.log(typeof(data));
+          carts = JSON.parse(data);
+          displayCart(carts)
+        }
+      })
+    }
+
+    function displayCart(carts){
+      var htmlString = "    <tr>\n" +
+              "      <th>Item</th>\n" +
+              "      <th>Cost</th>\n" +
+              "    </tr>"
+      carts.forEach(function(element){
+        htmlString += "<tr> <td>"+element.name+"</td><td>"+element.cost+"</td> </tr>"
+      })
+      $("#cart").html(htmlString)
+    }
   </script>
 
 

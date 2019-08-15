@@ -1,7 +1,8 @@
-@(x: String, y: Int)
+@import scala.collection.mutable.ArrayBuffer
+@import com.example.model.Product
+@(orderId: Int, contents: String)
 @testVariable = {DbStub.x}
 @layouts.html.timlayout("Delivery", "Order"){
-    <p> @x </p>
-
-    <p> @y </p>
+    <p> @orderId </p>
+    <p> @contents </p>
 }

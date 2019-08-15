@@ -2,24 +2,38 @@ package com.example.app
 
 import java.util.Date
 
-import com.example.model.{Cart, Order, OrderDbStub, ProductDbStub}
+import com.example.model.{Cart, Order, OrderDbStub, ProductDbStub, Product}
 import com.fasterxml.jackson.databind.ObjectMapper
+import com.fasterxml.jackson.module.scala.DefaultScalaModule
 import org.scalatra._
 
-class MyScalatraServlet extends ScalatraServlet {
+import scala.collection.mutable.ArrayBuffer
+
+class MyScalatraServlet() extends ScalatraServlet {
 
   get("/") {
     views.html.home(ProductDbStub.db)
   }
 
   get("/order/:id"){
-    println(OrderDbStub.db.get({params("id").toInt}).toString)
-    views.html.order(OrderDbStub.db.get({params("id").toInt}).toString, {params(key = "id").toInt})
+    try{
+      val order = OrderDbStub.db(params("id").toInt)
+      val objectMapper = new ObjectMapper()
+      objectMapper.registerModule(DefaultScalaModule)
+      val contentJson = objectMapper.writeValueAsString(order.contents)
+      println(order.contents)
+      views.html.order(order.id, contentJson)
+    } catch{
+      case _: Throwable => NotFound("Unable to find order.")
+    }
   }
 
   put("/addtocart/:id"){
     Cart.items += ProductDbStub.db(params(key = "id").toInt)
+  }
 
+  put("/emptycart"){
+    Cart.emptyCart()
   }
 
   post("/neworder"){
@@ -29,21 +43,25 @@ class MyScalatraServlet extends ScalatraServlet {
 
     //Serialise object into JSON
     val objectMapper = new ObjectMapper()
-    val order = new Order(id, date, "test")
+    objectMapper.registerModule(DefaultScalaModule)
 
-    //Post into DB.
-    println("date: " + date)
-    println("id: " + id)
-    println("order: " + order)
+    //Serialise object from JSON string to Scala Object
+    try{
+      val contents = objectMapper.readValue(request.body, classOf[ArrayBuffer[Product]])
+      val order = new Order(id, date, contents)
+      OrderDbStub.db += id -> order
+      Cart.emptyCart()
+      println(id)
+      Ok(s"$id")
+    }catch{
+      case e: Throwable => e.printStackTrace
+    }
 
-    OrderDbStub.db += id -> order
-  }
-
-  post("/testpost"){
-    OrderDbStub.db += 3 -> new Order(999, new Date(), "test999")
   }
 
   get("/getcart"){
-    Cart.items
+    val objectMapper = new ObjectMapper()
+    objectMapper.registerModule(DefaultScalaModule)
+    objectMapper.writeValueAsString(Cart.items)
   }
 }

@@ -2,6 +2,8 @@ package com.example.model
 
 import java.util.Date
 
-class Order(id: Int, time: Date, contents: String) {
+import scala.collection.mutable.ArrayBuffer
+
+class Order(val id: Int, val time: Date, val contents: ArrayBuffer[Product]) {
 
 }
